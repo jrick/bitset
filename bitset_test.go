@@ -3,7 +3,6 @@ package bitset_test
 import (
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	. "github.com/jrick/bitset"
 )
 
@@ -91,7 +90,6 @@ func TestInRange(t *testing.T) {
 				if got != exp {
 					t.Errorf("Test %d bitset %s unset failed: bit %d got %v expected %v",
 						testNum, nbs.name, bit, got, exp)
-					spew.Dump(nbs.bitset)
 					continue nextBitSet
 				}
 			}
