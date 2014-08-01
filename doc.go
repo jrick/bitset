@@ -16,7 +16,7 @@
 // structure  being more cache friendly.
 //
 // This package contains three bitset implementations: Words for efficiency,
-// Bytes for sitautions where bitsets must be serialized or deserialized,
+// Bytes for situations where bitsets must be serialized or deserialized,
 // and Spare for when memory efficiency is the most important factor when
 // working with sparse datasets.
 package bitset
