@@ -81,9 +81,9 @@ func TestInRange(t *testing.T) {
 				}
 			}
 
-			// Unset each bit bit in the bitsToUnset field and
-			// check that 1) the value was never set and 2) if
-			// unset, the value is now unset.
+			// Unset each bit in the bitsToUnset field and check
+			// that 1) the value was never set and 2) if unset,
+			// the value is now unset.
 			for bit, unset := range test.bitsToUnset {
 				exp := test.bitsToSet[bit] && !unset
 				nbs.bitset.SetBool(uint(bit), exp)
