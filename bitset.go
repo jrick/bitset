@@ -189,7 +189,7 @@ func (s *Bytes) Grow(numBits uint) {
 // Sparse is a memory efficient bitset for sparsly-distributed set bits.
 // Unlike a Words or Bytes which requires each word or byte between 0 and
 // the highest index to be allocated, a Sparse only holds the words which
-// contain set bits.  Additionally, Spare is the only BitSet implementation
+// contain set bits.  Additionally, Sparse is the only BitSet implementation
 // from this package which will dynamically expand and shrink as bits are
 // set and unset.
 //
@@ -204,7 +204,7 @@ func (s *Bytes) Grow(numBits uint) {
 // the other bitsets using realistic sample data before using this type
 // in an application.
 //
-// New Spare bitsets can be created using the builtin make function.
+// New Sparse bitsets can be created using the builtin make function.
 type Sparse map[uint]uintptr
 
 // Get returns whether the bit at index i is set or not.
