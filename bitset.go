@@ -186,12 +186,12 @@ func (s *Bytes) Grow(numBits uint) {
 	}
 }
 
-// Sparse returns a memory effecient bitset for sparsly-distributed set
-// bits.  Unlike a Words or Bytes which requires each word or byte between
-// 0 and the highest index to be allocated, a Sparse only holds the words
-// which contain set bits.  Additionally, Spare is the only BitSet
-// implemetation from this package which will dynamically expand and shrink
-// as bits are set and unset.
+// Sparse is a memory effecient bitset for sparsly-distributed set bits.
+// Unlike a Words or Bytes which requires each word or byte between 0 and
+// the highest index to be allocated, a Sparse only holds the words which
+// contain set bits.  Additionally, Spare is the only BitSet implementation
+// from this package which will dynamically expand and shrink as bits are
+// set and unset.
 //
 // As the map is unordered and there is no obvious way to (de)serialize this
 // structure, no byte implementation is provided, and all map values are
