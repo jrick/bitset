@@ -6,7 +6,7 @@
 // values into words and bytes.
 //
 // A bitset, while logically equivalent to a []bool, is often preferable
-// over a []bool due to the space and time effeciency of bit packing binary
+// over a []bool due to the space and time efficiency of bit packing binary
 // values.  They are typically more space efficient than a []bool since
 // (although implementation specifc) bools are typically machine word size.
 // On 64-bit architectures, this can result in a bitset using about 64 times

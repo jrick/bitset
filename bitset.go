@@ -67,7 +67,7 @@ type BitSet interface {
 }
 
 // Words represents a bitset backed by a word slice.  Words bitsets are
-// designed for effeciency and do not automatically grow for indexed values
+// designed for efficiency and do not automatically grow for indexed values
 // outside of the allocated range.  The Grow method is provided if it is
 // necessary to grow a Words bitset beyond its initial allocation.
 //
@@ -125,7 +125,7 @@ func (w *Words) Grow(numBits uint) {
 }
 
 // Bytes represents a bitset backed by a bytes slice.  Bytes bitsets,
-// while designed for efficiency, are slightly less effecient to use
+// while designed for efficiency, are slightly less efficient to use
 // than Words bitsets, since word-sized data is faster to manipulate.
 // However, Bytes have the nice property of easily and portably being
 // (de)serialized to or from an io.Reader or io.Writer.  Like a Words,
@@ -186,7 +186,7 @@ func (s *Bytes) Grow(numBits uint) {
 	}
 }
 
-// Sparse is a memory effecient bitset for sparsly-distributed set bits.
+// Sparse is a memory efficient bitset for sparsly-distributed set bits.
 // Unlike a Words or Bytes which requires each word or byte between 0 and
 // the highest index to be allocated, a Sparse only holds the words which
 // contain set bits.  Additionally, Spare is the only BitSet implementation
@@ -199,7 +199,7 @@ func (s *Bytes) Grow(numBits uint) {
 //
 // As Sparse bitsets are backed by a map, getting and setting bits are
 // orders of magnitude slower than other slice-backed bitsets and should
-// only be used with sparse datasets and when memory effeciency is a
+// only be used with sparse datasets and when memory efficiency is a
 // top concern.  It is highly recommended to benchmark this type against
 // the other bitsets using realistic sample data before using this type
 // in an application.
