@@ -125,12 +125,6 @@ func (w *Words) Grow(numBits uint) {
 	}
 }
 
-// Bytes represents a fixed size bitset backed by a byte slice.  Bytes
-// bitsets are designed for efficiency (although are slightly less
-// effecient than a Words due to word-sized data being faster to
-// manipulate), but also have the property that they may be portably
-// written to an io.Writer or read from an io.Reader.
-
 // Bytes represents a bitset backed by a bytes slice.  Bytes bitsets,
 // while designed for efficiency, are slightly less effecient to use
 // than Words bitsets, since word-sized data is faster to manipulate.
