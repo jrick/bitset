@@ -119,7 +119,8 @@ func (w Words) SetBool(i uint, b bool) {
 func (w *Words) Grow(numBits uint) {
 	words := *w
 	targetLen := (numBits + wordModMask) >> wordShift
-	if missing := targetLen - uint(len(words)); missing != 0 {
+	missing := targetLen - uint(len(words))
+	if missing > 0 && missing <= targetLen {
 		*w = append(words, make(Words, missing)...)
 	}
 }
@@ -181,7 +182,8 @@ func (s Bytes) SetBool(i uint, b bool) {
 func (s *Bytes) Grow(numBits uint) {
 	bytes := *s
 	targetLen := (numBits + byteModMask) >> byteShift
-	if missing := targetLen - uint(len(bytes)); missing != 0 {
+	missing := targetLen - uint(len(bytes))
+	if missing > 0 && missing <= targetLen {
 		*s = append(bytes, make(Bytes, missing)...)
 	}
 }

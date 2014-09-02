@@ -139,6 +139,11 @@ func TestGrowing(t *testing.T) {
 			newNumBits:  64,
 			bitSets:     []bool{},
 		},
+		{
+			initialBits: []bool{0: true, 15: true},
+			newNumBits:  8,
+			bitSets:     []bool{7: true, 15: true},
+		},
 	}
 
 	for testNum, test := range tests {
