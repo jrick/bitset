@@ -17,7 +17,7 @@ type namedBitSet struct {
 
 func standardBitsets(numBits int) []namedBitSet {
 	return []namedBitSet{
-		{"Words", NewWords(numBits)},
+		{"Pointers", NewPointers(numBits)},
 		{"Bytes", NewBytes(numBits)},
 		{"Sparse", make(Sparse)},
 	}
@@ -110,10 +110,10 @@ type namedGrower struct {
 }
 
 func standardGrowers(numBits int) []namedGrower {
-	words := NewWords(numBits)
+	pointers := NewPointers(numBits)
 	bytes := NewBytes(numBits)
 	return []namedGrower{
-		{"Words", &words},
+		{"Poitners", &pointers},
 		{"Bytes", &bytes},
 	}
 }

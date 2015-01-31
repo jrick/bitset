@@ -5,38 +5,38 @@
 package bitset
 
 const (
-	// wordBits is the total number of bits that make up a word.
-	wordBits = 32 << uint(^uintptr(0)>>63)
+	// ptrBits is the total number of bits that make up a pointer.
+	ptrBits = 32 << uint(^uintptr(0)>>63)
 
-	// wordModMask is the maximum number of indexes a 1 may be left
-	// shifted by before the value overflows a word.  It is equal to one
-	// less than the number of bits per word.
+	// ptrModMask is the maximum number of indexes a 1 may be left
+	// shifted by before the value overflows a pointer.  It is equal to one
+	// less than the number of bits per pointer.
 	//
 	// This package uses this value to calculate bit indexes within a
-	// word as it is quite a bit more efficient to perform a bitwise AND
+	// pointer as it is quite a bit more efficient to perform a bitwise AND
 	// with this rather than using the modulus operator (n&31 == n%32,
 	// and n%63 == n%64).
-	wordModMask = wordBits - 1
+	ptrModMask = ptrBits - 1
 
-	// wordShift is the number of bits to perform a right shift of a bit
-	// index by to get the word index of a bit in the bitset.  It is
+	// ptrShift is the number of bits to perform a right shift of a bit
+	// index by to get the pointer index of a bit in the bitset.  It is
 	// functionally equivalent to integer dividing the bit index by
-	// wordBits, but is a bit more efficient to calculate.  The value is
-	// equal to the log2(wordBits), or the single bit index set in a
-	// word to create the value wordBits.  On machines where a word is
-	// 32-bits, this value is 5.  On machines with 64-bit sized words,
+	// ptrBits, but is a bit more efficient to calculate.  The value is
+	// equal to the log2(ptrBits), or the single bit index set in a
+	// pointer to create the value ptrBits.  On machines where a pointer is
+	// 32-bits, this value is 5.  On machines with 64-bit sized pointers,
 	// this value is 6.  It is calculated as follows:
 	//
 	//      On 32-bit machines (results in 5):
-	//        Given the word size 32:  0b00100000
-	//        Add the value 128:       0b10100000
-	//        And right shift by 5:    0b00000101
+	//        Given the pointer size 32:  0b00100000
+	//        Add the value 128:          0b10100000
+	//        And right shift by 5:       0b00000101
 	//
 	//      On 64-bit machines (results in 6):
-	//        Given the word size 64:  0b01000000
-	//        Add the value 128:       0b11000000
-	//        And right shift by 5:    0b00000110
-	wordShift = (1<<7 + wordBits) >> 5
+	//        Given the pointer size 64:  0b01000000
+	//        Add the value 128:          0b11000000
+	//        And right shift by 5:       0b00000110
+	ptrShift = (1<<7 + ptrBits) >> 5
 
 	// byteModMask is the maximum number of indexes a 1 may be left
 	// shifted by before the value overflows a byte.  It is equal to one
@@ -55,10 +55,10 @@ const (
 )
 
 // BitSet defines the method set of a bitset.  Bitsets allow for bit
-// packing of binary values to words or bytes for space and time
+// packing of binary values to pointers or bytes for space and time
 // efficiency.
 //
-// The Grow methods of Words and Bytes are not part of this interface.
+// The Grow methods of Pointers and Bytes are not part of this interface.
 type BitSet interface {
 	Get(i int) bool
 	Set(i int)
@@ -66,70 +66,70 @@ type BitSet interface {
 	SetBool(i int, b bool)
 }
 
-// Words represents a bitset backed by a word slice.  Words bitsets are
-// designed for efficiency and do not automatically grow for indexed values
+// Pointers represents a bitset backed by a uintptr slice.  Pointers bitsets
+// are designed for efficiency and do not automatically grow for indexed values
 // outside of the allocated range.  The Grow method is provided if it is
-// necessary to grow a Words bitset beyond its initial allocation.
+// necessary to grow a Pointers bitset beyond its initial allocation.
 //
-// The len of a Words is the number of words in the set.  Multiplying by
-// the machine word size will result in the number of bits the set can hold.
-type Words []uintptr
+// The len of a Pointers is the number of pointers in the set.  Multiplying by
+// the machine pointer size will result in the number of bits the set can hold.
+type Pointers []uintptr
 
-// NewWords returns a new bitset that is capable of holding numBits number
-// of binary values.  All words in the bitset are zeroed and each bit is
+// NewPointers returns a new bitset that is capable of holding numBits number
+// of binary values.  All pointers in the bitset are zeroed and each bit is
 // therefore considered unset.
-func NewWords(numBits int) Words {
-	return make(Words, (numBits+wordModMask)>>wordShift)
+func NewPointers(numBits int) Pointers {
+	return make(Pointers, (numBits+ptrModMask)>>ptrShift)
 }
 
 // Get returns whether the bit at index i is set or not.  This method will
-// panic if the index results in a word index that exceeds the number of
-// words held by the bitset.
-func (w Words) Get(i int) bool {
-	return w[uint(i)>>wordShift]&(1<<(uint(i)&wordModMask)) != 0
+// panic if the index results in a pointer index that exceeds the number of
+// pointers held by the bitset.
+func (p Pointers) Get(i int) bool {
+	return p[uint(i)>>ptrShift]&(1<<(uint(i)&ptrModMask)) != 0
 }
 
 // Set sets the bit at index i.  This method will panic if the index results
-// in a word index that exceeds the number of words held by the bitset.
-func (w Words) Set(i int) {
-	w[uint(i)>>wordShift] |= 1 << (uint(i) & wordModMask)
+// in a pointer index that exceeds the number of pointers held by the bitset.
+func (p Pointers) Set(i int) {
+	p[uint(i)>>ptrShift] |= 1 << (uint(i) & ptrModMask)
 }
 
 // Unset unsets the bit at index i.  This method will panic if the index
-// results in a word index that exceeds the number of words held by the
+// results in a pointer index that exceeds the number of pointers held by the
 // bitset.
-func (w Words) Unset(i int) {
-	w[uint(i)>>wordShift] &^= 1 << (uint(i) & wordModMask)
+func (p Pointers) Unset(i int) {
+	p[uint(i)>>ptrShift] &^= 1 << (uint(i) & ptrModMask)
 }
 
 // SetBool sets or unsets the bit at index i depending on the value of b.
-// This method will panic if the index results in a word index that exceeds
-// the number of words held by the bitset.
-func (w Words) SetBool(i int, b bool) {
+// This method will panic if the index results in a pointer index that exceeds
+// the number of pointers held by the bitset.
+func (p Pointers) SetBool(i int, b bool) {
 	if b {
-		w.Set(i)
+		p.Set(i)
 		return
 	}
-	w.Unset(i)
+	p.Unset(i)
 }
 
 // Grow ensures that the bitset w is large enough to hold numBits number of
 // bits, potentially appending to and/or reallocating the slice if the
 // current length is not sufficient.
-func (w *Words) Grow(numBits int) {
-	words := *w
-	targetLen := (numBits + wordModMask) >> wordShift
-	missing := targetLen - len(words)
+func (p *Pointers) Grow(numBits int) {
+	ptrs := *p
+	targetLen := (numBits + ptrModMask) >> ptrShift
+	missing := targetLen - len(ptrs)
 	if missing > 0 && missing <= targetLen {
-		*w = append(words, make(Words, missing)...)
+		*p = append(ptrs, make(Pointers, missing)...)
 	}
 }
 
 // Bytes represents a bitset backed by a bytes slice.  Bytes bitsets,
 // while designed for efficiency, are slightly less efficient to use
-// than Words bitsets, since word-sized data is faster to manipulate.
+// than Pointers bitsets, since pointer-sized data is faster to manipulate.
 // However, Bytes have the nice property of easily and portably being
-// (de)serialized to or from an io.Reader or io.Writer.  Like a Words,
+// (de)serialized to or from an io.Reader or io.Writer.  Like a Pointers,
 // Bytes bitsets do not automatically grow for indexed values outside
 // of the allocated range.  The Grow method is provided if it is
 // necessary to grow a Bytes bitset beyond its initial allocation.
@@ -189,15 +189,15 @@ func (s *Bytes) Grow(numBits int) {
 }
 
 // Sparse is a memory efficient bitset for sparsly-distributed set bits.
-// Unlike a Words or Bytes which requires each word or byte between 0 and
-// the highest index to be allocated, a Sparse only holds the words which
-// contain set bits.  Additionally, Sparse is the only BitSet implementation
-// from this package which will dynamically expand and shrink as bits are
-// set and unset.
+// Unlike a Pointers or Bytes which requires each pointer or byte between 0
+// and the highest index to be allocated, a Sparse only holds the pointers
+// which contain set bits.  Additionally, Sparse is the only BitSet
+// implementation from this package which will dynamically expand and shrink
+// as bits are set and unset.
 //
 // As the map is unordered and there is no obvious way to (de)serialize this
 // structure, no byte implementation is provided, and all map values are
-// machine word sized.
+// machine pointer-sized.
 //
 // As Sparse bitsets are backed by a map, getting and setting bits are
 // orders of magnitude slower than other slice-backed bitsets and should
@@ -211,29 +211,29 @@ type Sparse map[int]uintptr
 
 // Get returns whether the bit at index i is set or not.
 func (s Sparse) Get(i int) bool {
-	return s[int(uint(i)>>wordShift)]&(1<<(uint(i)&wordModMask)) != 0
+	return s[int(uint(i)>>ptrShift)]&(1<<(uint(i)&ptrModMask)) != 0
 }
 
-// Set sets the bit at index i.  A word insert is performed if if no bits
-// of this word have been previously set.
+// Set sets the bit at index i.  A map insert is performed if if no bits
+// of the associated pointer have been previously set.
 func (s Sparse) Set(i int) {
-	s[int(uint(i)>>wordShift)] |= 1 << (uint(i) & wordModMask)
+	s[int(uint(i)>>ptrShift)] |= 1 << (uint(i) & ptrModMask)
 }
 
-// Unset unsets the bit at index i.  If all bits for a given word have are
-// unset, the word is removed from the set, and future calls to Get will
-// return false for all bits from this word.
+// Unset unsets the bit at index i.  If all bits for a given pointer have are
+// unset, the pointer is removed from the map, and future calls to Get will
+// return false for all bits from this pointer.
 func (s Sparse) Unset(i int) {
-	wordKey := int(uint(i) >> wordShift)
-	word, ok := s[wordKey]
+	ptrKey := int(uint(i) >> ptrShift)
+	ptr, ok := s[ptrKey]
 	if !ok {
 		return
 	}
-	word &^= 1 << (uint(i) & wordModMask)
-	if word == 0 {
-		delete(s, wordKey)
+	ptr &^= 1 << (uint(i) & ptrModMask)
+	if ptr == 0 {
+		delete(s, ptrKey)
 	} else {
-		s[wordKey] = word
+		s[ptrKey] = ptr
 	}
 }
 
