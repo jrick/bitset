@@ -15,7 +15,7 @@ type namedBitSet struct {
 	bitset BitSet
 }
 
-func standardBitsets(numBits uint) []namedBitSet {
+func standardBitsets(numBits int) []namedBitSet {
 	return []namedBitSet{
 		{"Words", NewWords(numBits)},
 		{"Bytes", NewBytes(numBits)},
@@ -71,12 +71,12 @@ func TestInRange(t *testing.T) {
 
 	for testNum, test := range tests {
 	nextBitSet:
-		for _, nbs := range standardBitsets(uint(len(test.bitsToSet))) {
+		for _, nbs := range standardBitsets(len(test.bitsToSet)) {
 			// Set all bits in the bitsToSet field and compare
 			// against the expected values.
 			for bit, testVal := range test.bitsToSet {
-				nbs.bitset.SetBool(uint(bit), testVal)
-				got := nbs.bitset.Get(uint(bit))
+				nbs.bitset.SetBool(bit, testVal)
+				got := nbs.bitset.Get(bit)
 				if got != testVal {
 					t.Errorf("Test %d bitset %s failed: bit %d got %v expected %v",
 						testNum, nbs.name, bit, got, testVal)
@@ -89,8 +89,8 @@ func TestInRange(t *testing.T) {
 			// the value is now unset.
 			for bit, unset := range test.bitsToUnset {
 				exp := test.bitsToSet[bit] && !unset
-				nbs.bitset.SetBool(uint(bit), exp)
-				got := nbs.bitset.Get(uint(bit))
+				nbs.bitset.SetBool(bit, exp)
+				got := nbs.bitset.Get(bit)
 				if got != exp {
 					t.Errorf("Test %d bitset %s unset failed: bit %d got %v expected %v",
 						testNum, nbs.name, bit, got, exp)
@@ -105,11 +105,11 @@ type namedGrower struct {
 	name   string
 	bitset interface {
 		BitSet
-		Grow(uint)
+		Grow(int)
 	}
 }
 
-func standardGrowers(numBits uint) []namedGrower {
+func standardGrowers(numBits int) []namedGrower {
 	words := NewWords(numBits)
 	bytes := NewBytes(numBits)
 	return []namedGrower{
@@ -121,7 +121,7 @@ func standardGrowers(numBits uint) []namedGrower {
 func TestGrowing(t *testing.T) {
 	tests := []struct {
 		initialBits []bool
-		newNumBits  uint
+		newNumBits  int
 		bitSets     []bool
 	}{
 		{
@@ -148,19 +148,19 @@ func TestGrowing(t *testing.T) {
 
 	for testNum, test := range tests {
 	nextBitSet:
-		for _, nbs := range standardGrowers(uint(len(test.initialBits))) {
+		for _, nbs := range standardGrowers(len(test.initialBits)) {
 			for bit, val := range test.initialBits {
-				nbs.bitset.SetBool(uint(bit), val)
+				nbs.bitset.SetBool(bit, val)
 			}
 
 			nbs.bitset.Grow(test.newNumBits)
 
 			for bit, val := range test.bitSets {
-				nbs.bitset.SetBool(uint(bit), val)
+				nbs.bitset.SetBool(bit, val)
 			}
 
 			for bit, exp := range test.bitSets {
-				got := nbs.bitset.Get(uint(bit))
+				got := nbs.bitset.Get(bit)
 				if exp != got {
 					t.Errorf("Growing %d bitset %s: bit %d: got %v expected %v",
 						testNum, nbs.name, bit, got, exp)
@@ -172,11 +172,11 @@ func TestGrowing(t *testing.T) {
 }
 
 func TestNoSets(t *testing.T) {
-	tests := []uint{0, 1, 8, 16, 32, 64, 128, 1024}
+	tests := []int{0, 1, 8, 16, 32, 64, 128, 1024}
 	for testNum, test := range tests {
 	nextBitSet:
 		for _, nbs := range standardBitsets(test) {
-			for i := uint(0); i < test; i++ {
+			for i := 0; i < test; i++ {
 				if nbs.bitset.Get(i) {
 					t.Errorf("%d: bitset %s: zero value caused set bit %d",
 						testNum, nbs.name, i)

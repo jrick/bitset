@@ -60,10 +60,10 @@ const (
 //
 // The Grow methods of Words and Bytes are not part of this interface.
 type BitSet interface {
-	Get(i uint) bool
-	Set(i uint)
-	Unset(i uint)
-	SetBool(i uint, b bool)
+	Get(i int) bool
+	Set(i int)
+	Unset(i int)
+	SetBool(i int, b bool)
 }
 
 // Words represents a bitset backed by a word slice.  Words bitsets are
@@ -78,34 +78,34 @@ type Words []uintptr
 // NewWords returns a new bitset that is capable of holding numBits number
 // of binary values.  All words in the bitset are zeroed and each bit is
 // therefore considered unset.
-func NewWords(numBits uint) Words {
+func NewWords(numBits int) Words {
 	return make(Words, (numBits+wordModMask)>>wordShift)
 }
 
 // Get returns whether the bit at index i is set or not.  This method will
 // panic if the index results in a word index that exceeds the number of
 // words held by the bitset.
-func (w Words) Get(i uint) bool {
-	return w[i>>wordShift]&(1<<(i&wordModMask)) != 0
+func (w Words) Get(i int) bool {
+	return w[uint(i)>>wordShift]&(1<<(uint(i)&wordModMask)) != 0
 }
 
 // Set sets the bit at index i.  This method will panic if the index results
 // in a word index that exceeds the number of words held by the bitset.
-func (w Words) Set(i uint) {
-	w[i>>wordShift] |= 1 << (i & wordModMask)
+func (w Words) Set(i int) {
+	w[uint(i)>>wordShift] |= 1 << (uint(i) & wordModMask)
 }
 
 // Unset unsets the bit at index i.  This method will panic if the index
 // results in a word index that exceeds the number of words held by the
 // bitset.
-func (w Words) Unset(i uint) {
-	w[i>>wordShift] &^= 1 << (i & wordModMask)
+func (w Words) Unset(i int) {
+	w[uint(i)>>wordShift] &^= 1 << (uint(i) & wordModMask)
 }
 
 // SetBool sets or unsets the bit at index i depending on the value of b.
 // This method will panic if the index results in a word index that exceeds
 // the number of words held by the bitset.
-func (w Words) SetBool(i uint, b bool) {
+func (w Words) SetBool(i int, b bool) {
 	if b {
 		w.Set(i)
 		return
@@ -116,10 +116,10 @@ func (w Words) SetBool(i uint, b bool) {
 // Grow ensures that the bitset w is large enough to hold numBits number of
 // bits, potentially appending to and/or reallocating the slice if the
 // current length is not sufficient.
-func (w *Words) Grow(numBits uint) {
+func (w *Words) Grow(numBits int) {
 	words := *w
 	targetLen := (numBits + wordModMask) >> wordShift
-	missing := targetLen - uint(len(words))
+	missing := targetLen - len(words)
 	if missing > 0 && missing <= targetLen {
 		*w = append(words, make(Words, missing)...)
 	}
@@ -141,34 +141,34 @@ type Bytes []byte
 // NewBytes returns a new bitset that is capable of holding numBits number
 // of binary values.  All bytes in the bitset are zeroed and each bit is
 // therefore considered unset.
-func NewBytes(numBits uint) Bytes {
+func NewBytes(numBits int) Bytes {
 	return make(Bytes, (numBits+byteModMask)>>byteShift)
 }
 
 // Get returns whether the bit at index i is set or not.  This method will
 // panic if the index results in a byte index that exceeds the number of
 // bytes held by the bitset.
-func (s Bytes) Get(i uint) bool {
-	return s[i>>byteShift]&(1<<(i&byteModMask)) != 0
+func (s Bytes) Get(i int) bool {
+	return s[uint(i)>>byteShift]&(1<<(uint(i)&byteModMask)) != 0
 }
 
 // Set sets the bit at index i.  This method will panic if the index results
 // in a byte index that exceeds the number of a bytes held by the bitset.
-func (s Bytes) Set(i uint) {
-	s[i>>byteShift] |= 1 << (i & byteModMask)
+func (s Bytes) Set(i int) {
+	s[uint(i)>>byteShift] |= 1 << (uint(i) & byteModMask)
 }
 
 // Unset unsets the bit at index i.  This method will panc if the index
 // results in a byte index that exceeds the number of bytes held by the
 // bitset.
-func (s Bytes) Unset(i uint) {
-	s[i>>byteShift] &^= 1 << (i & byteModMask)
+func (s Bytes) Unset(i int) {
+	s[uint(i)>>byteShift] &^= 1 << (uint(i) & byteModMask)
 }
 
 // SetBool sets or unsets the bit at index i depending on the value of b.
 // This method will panic if the index results in a byte index that exceeds
 // the nubmer of bytes held by the bitset.
-func (s Bytes) SetBool(i uint, b bool) {
+func (s Bytes) SetBool(i int, b bool) {
 	if b {
 		s.Set(i)
 		return
@@ -179,10 +179,10 @@ func (s Bytes) SetBool(i uint, b bool) {
 // Grow ensures that the bitset s is large enough to hold numBits number of
 // bits, potentially appending to and/or reallocating the slice if the
 // current length is not sufficient.
-func (s *Bytes) Grow(numBits uint) {
+func (s *Bytes) Grow(numBits int) {
 	bytes := *s
 	targetLen := (numBits + byteModMask) >> byteShift
-	missing := targetLen - uint(len(bytes))
+	missing := targetLen - len(bytes)
 	if missing > 0 && missing <= targetLen {
 		*s = append(bytes, make(Bytes, missing)...)
 	}
@@ -207,29 +207,29 @@ func (s *Bytes) Grow(numBits uint) {
 // in an application.
 //
 // New Sparse bitsets can be created using the builtin make function.
-type Sparse map[uint]uintptr
+type Sparse map[int]uintptr
 
 // Get returns whether the bit at index i is set or not.
-func (s Sparse) Get(i uint) bool {
-	return s[i>>wordShift]&(1<<(i&wordModMask)) != 0
+func (s Sparse) Get(i int) bool {
+	return s[int(uint(i)>>wordShift)]&(1<<(uint(i)&wordModMask)) != 0
 }
 
 // Set sets the bit at index i.  A word insert is performed if if no bits
 // of this word have been previously set.
-func (s Sparse) Set(i uint) {
-	s[i>>wordShift] |= 1 << (i & wordModMask)
+func (s Sparse) Set(i int) {
+	s[int(uint(i)>>wordShift)] |= 1 << (uint(i) & wordModMask)
 }
 
 // Unset unsets the bit at index i.  If all bits for a given word have are
 // unset, the word is removed from the set, and future calls to Get will
 // return false for all bits from this word.
-func (s Sparse) Unset(i uint) {
-	wordKey := i >> wordShift
+func (s Sparse) Unset(i int) {
+	wordKey := int(uint(i) >> wordShift)
 	word, ok := s[wordKey]
 	if !ok {
 		return
 	}
-	word &^= 1 << (i & wordModMask)
+	word &^= 1 << (uint(i) & wordModMask)
 	if word == 0 {
 		delete(s, wordKey)
 	} else {
@@ -240,7 +240,7 @@ func (s Sparse) Unset(i uint) {
 // SetBool sets the bit at index i if b is true, otherwise the bit is unset.
 // see the comments for the get and set methods for the memory allocation
 // rules that are followed when getting or setting bits in a Sparse bitset.
-func (s Sparse) SetBool(i uint, b bool) {
+func (s Sparse) SetBool(i int, b bool) {
 	if b {
 		s.Set(i)
 		return
