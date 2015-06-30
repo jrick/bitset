@@ -1,0 +1,20 @@
+version: "{build}"
+
+clone_folder: c:\projects\src\github.com\jrick\bitset
+
+environment:
+ PATH: c:\projects\bin;%PATH%
+ GOPATH: c:\projects
+ GORACE: halt_on_error=1
+ NOTIFY_TIMEOUT: 5s
+
+install:
+ - go version
+ - go get golang.org/x/tools/cmd/vet
+ - go get -v -t ./...
+
+build_script:
+ - go build ./...
+
+test_script:
+ - go test -v -race ./...
