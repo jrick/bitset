@@ -6,7 +6,6 @@ environment:
  PATH: c:\projects\bin;%PATH%
  GOPATH: c:\projects
  GORACE: halt_on_error=1
- NOTIFY_TIMEOUT: 5s
 
 install:
  - go version
